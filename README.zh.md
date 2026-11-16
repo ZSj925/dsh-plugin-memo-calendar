@@ -10,6 +10,7 @@
 - 每天可以添加任意多条独立备忘录，一条一条添加，不再是一整段日记。
 - 当天的面板底部有输入框：写完点「添加」，或按 `Ctrl`/`Cmd`+`Enter`。
 - 每条备忘录都可以单独编辑或删除；「清空本日」需要二次确认。
+- 拖动备忘录左侧的手柄可以调整当天列表顺序，新顺序会立即保存，重启后仍然保留。
 - 月历单元格显示当天的备忘录条数，并预览最新一条。
 - 今天用淡色背景、细描边和日期旁的小圆点标记，日期本身与其他日期一致。
 - 支持上个月 / 下个月、回到今天，以及天数与备忘录条数统计。
@@ -75,7 +76,7 @@ dsh plugin add link:/absolute/path/to/dsh-plugin-memo-calendar
 
 ## 对外接口
 
-宿主注册 6 条同源 JSON 路由（都在 `/dsh-memo/api/` 下）：
+宿主注册 7 条同源 JSON 路由（都在 `/dsh-memo/api/` 下）：
 
 | 方法 | 路径 | 请求体 | 返回 |
 | --- | --- | --- | --- |
@@ -84,6 +85,7 @@ dsh plugin add link:/absolute/path/to/dsh-plugin-memo-calendar
 | POST | `/add` | `{ date, text }` | `{ item, items, days, memos }` |
 | POST | `/update` | `{ date, id, text }` | `{ item, items, days, memos }` |
 | POST | `/delete` | `{ date, id }` | `{ ok, removed, items, days, memos }` |
+| POST | `/reorder` | `{ date, ids }` | `{ items, days, memos }` |
 | POST | `/clear` | `{ date }` | `{ ok, removed, days, memos }` |
 
 日期使用本地日历日期，格式为 `YYYY-MM-DD`。路由会拒绝显式跨站请求

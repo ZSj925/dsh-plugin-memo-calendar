@@ -13,6 +13,8 @@ memos. Pick a day, add memos one by one, and everything stays on this machine.
   `Ctrl`/`Cmd`+`Enter`.
 - Each memo can be edited or deleted independently; **Clear day** removes all
   memos for the selected day after a second confirmation.
+- Drag the grip handle beside a memo to reorder the day's list; the new order
+  is saved immediately and survives restarts.
 - Calendar cells show the number of memos and a preview of the latest one.
 - Today is marked with a tinted cell, a subtle ring, and a small dot beside the date; the date itself looks like every other day.
 - Previous / next month, a Today shortcut, and day/memo totals.
@@ -83,7 +85,7 @@ notebook entry. Existing text is preserved.
 
 ## HTTP surface
 
-Six same-origin JSON routes under `/dsh-memo/api/`:
+Seven same-origin JSON routes under `/dsh-memo/api/`:
 
 | Method | Path | Body | Result |
 | --- | --- | --- | --- |
@@ -92,6 +94,7 @@ Six same-origin JSON routes under `/dsh-memo/api/`:
 | POST | `/add` | `{ date, text }` | `{ item, items, days, memos }` |
 | POST | `/update` | `{ date, id, text }` | `{ item, items, days, memos }` |
 | POST | `/delete` | `{ date, id }` | `{ ok, removed, items, days, memos }` |
+| POST | `/reorder` | `{ date, ids }` | `{ items, days, memos }` |
 | POST | `/clear` | `{ date }` | `{ ok, removed, days, memos }` |
 
 Dates are local calendar dates in `YYYY-MM-DD` form. Routes refuse explicit
