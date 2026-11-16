@@ -1,7 +1,8 @@
-# dsh-plugin-memo-calendar —— DSH bundle patch
+# dsh-plugin-memo-calendar — DSH bundle patch
 #
-# 把这个包插入 profile 的配置树：一行宿主半侧（lib/index.js，负责 /dsh-memo/api/*
-# 路由与 notes.json 存储），客户端半侧由 package.json 的 dsh.client 声明自动提供。
+# One host row owns the /dsh-memo/api/* routes and the local entries.json store.
+# The Client half is declared by package.json dsh.client and rendered through
+# the sidebar panellist + main slots.
 
 - insert:
     - id: memo-calendar

@@ -1,15 +1,16 @@
 {
   "name": "dsh-plugin-memo-calendar",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "DSH 备忘录：右侧栏笔记面板，支持搜索、置顶、自动保存，数据存放在本机 DSH 目录",
+  "description": "A calendar memo panel for DeepSeek Harness: one local, auto-saved memo for every day.",
   "keywords": [
     "dsh",
     "dsh-plugin",
     "deepseek-harness",
     "memo",
-    "notes",
-    "calendar"
+    "calendar",
+    "journal",
+    "notes"
   ],
   "type": "module",
   "main": "lib/index.js",
@@ -21,11 +22,15 @@
       "default": "./lib/client.js"
     },
     "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
     "./package.json": "./package.json"
   },
   "files": [
     "lib",
+    "locale",
     "cordis.patch.yml",
+    "icon.svg",
     "README.md",
     "README.zh.md",
     "LICENSE"
@@ -35,8 +40,16 @@
       "patch": "./cordis.patch.yml"
     },
     "client": {
-      "platform": "web"
+      "platform": "web",
+      "immediately": true
     }
   },
-  "license": "MIT"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZSj925/dsh-plugin-memo-calendar.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  }
 }
