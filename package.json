@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-memo-calendar",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "private": true,
   "description": "A calendar memo plugin for DeepSeek Harness: add individual, locally saved memos to any day.",
   "keywords": [

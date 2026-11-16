@@ -14,7 +14,7 @@ memos. Pick a day, add memos one by one, and everything stays on this machine.
 - Each memo can be edited or deleted independently; **Clear day** removes all
   memos for the selected day after a second confirmation.
 - Calendar cells show the number of memos and a preview of the latest one.
-- Today is marked with a tinted cell and a filled date number.
+- Today is marked with a tinted cell, a subtle ring, and a small dot beside the date; the date itself looks like every other day.
 - Previous / next month, a Today shortcut, and day/memo totals.
 - Light and dark themes inherit the host's `--dsw-*` tokens; all UI copy is
   localized in English and Simplified Chinese.
