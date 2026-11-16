@@ -1,53 +1,48 @@
-# Calendar memos for DeepSeek Harness
+# 日历备忘录 · DeepSeek Harness 插件
 
-A small DSH plugin that turns a month calendar into a collection of daily
-memos. Pick a day, add memos one by one, and everything stays on this machine.
+> [English](README.en.md) · 简体中文
 
-![Calendar icon](icon.svg)
+把月历变成每日备忘录：点选任意一天，一条一条添加，文字只保存在本机。
 
-## What it does
+![日历图标](icon.svg)
 
-- A full month calendar in the main panel, opened from the sidebar's panel list.
-- Any number of separate memos per day, added one at a time.
-- Composer at the bottom of the day panel: type a memo, then **Add** or press
-  `Ctrl`/`Cmd`+`Enter`.
-- Each memo can be edited or deleted independently; **Clear day** removes all
-  memos for the selected day after a second confirmation.
-- Drag the grip handle beside a memo to reorder the day's list; the new order
-  is saved immediately and survives restarts.
-- Calendar cells show the number of memos and a preview of the latest one.
-- Today is marked with a tinted cell, a subtle ring, and a small dot beside the date; the date itself looks like every other day.
-- Previous / next month, a Today shortcut, and day/memo totals.
-- Light and dark themes inherit the host's `--dsw-*` tokens; all UI copy is
-  localized in English and Simplified Chinese.
-- Data never leaves the machine.
+## 功能
 
-## Install
+- 主面板中的完整月历，从侧边栏的面板列表打开。
+- 每天可以添加任意多条独立备忘录，一条一条添加，不再是一整段日记。
+- 当天的面板底部有输入框：写完点「添加」，或按 `Ctrl`/`Cmd`+`Enter`。
+- 每条备忘录都可以单独编辑或删除；「清空本日」需要二次确认。
+- 拖动备忘录左侧的手柄可以调整当天列表顺序，新顺序会立即保存，重启后仍然保留。
+- 月历单元格显示当天的备忘录条数，并预览最新一条。
+- 今天用淡色背景、细描边和日期旁的小圆点标记，日期本身与其他日期一致。
+- 支持上个月 / 下个月、回到今天，以及天数与备忘录条数统计。
+- 跟随 DSH 的明暗主题与主题变量；界面文案支持简体中文和英文。
+- 数据只保存在本机。
 
-The repository is itself an installable DSH bundle: `package.json` declares
-`dsh.bundle.patch`, the host half is `lib/index.js`, and the browser half is
-`lib/client.js` (no build step).
+## 安装
 
-From GitHub:
+本仓库本身就是一个可安装的 DSH bundle：`package.json` 的 `dsh.bundle.patch` 指向
+`cordis.patch.yml`，宿主半侧是 `lib/index.js`，浏览器半侧是 `lib/client.js`，无需构建。
+
+从 GitHub 安装：
 
 ```bash
 dsh plugin add github:ZSj925/dsh-plugin-memo-calendar
 ```
 
-Or install the checked-out directory:
+或安装本地目录：
 
 ```bash
 dsh plugin add link:/absolute/path/to/dsh-plugin-memo-calendar
 ```
 
-After installation, reload the Web UI. The calendar icon appears in the
-sidebar's panel list; selecting it opens the calendar. If the entry is missing,
-check that `dsh-plugin-memo-calendar` is enabled under **Settings → Plugins**.
+安装后刷新 Web UI。侧边栏的面板列表里会出现日历图标，点击即打开。如果没有出现，
+请在「设置 → 插件」中确认 `dsh-plugin-memo-calendar` 已启用。
 
-## Data
+## 数据位置
 
 ```
-<DSH_HOME>/memo-calendar/entries.json      # default: ~/.dsh/memo-calendar/entries.json
+<DSH_HOME>/memo-calendar/entries.json      # 默认：~/.dsh/memo-calendar/entries.json
 ```
 
 ```json
@@ -58,13 +53,13 @@ check that `dsh-plugin-memo-calendar` is enabled under **Settings → Plugins**.
       "items": [
         {
           "id": "6f0d0e1a-…",
-          "text": "First memo for the day.",
+          "text": "今天的第一条备忘录。",
           "createdAt": "2026-11-16T10:00:00.000Z",
           "updatedAt": "2026-11-16T10:00:00.000Z"
         },
         {
           "id": "88d1c5b2-…",
-          "text": "A second, separate memo.",
+          "text": "今天第二条，单独保存。",
           "createdAt": "2026-11-16T10:05:00.000Z",
           "updatedAt": "2026-11-16T10:05:00.000Z"
         }
@@ -74,20 +69,18 @@ check that `dsh-plugin-memo-calendar` is enabled under **Settings → Plugins**.
 }
 ```
 
-Deleting the last memo of a day removes that day. Writes are serialized and
-landed with write-temp + rename; a corrupt file is kept as
-`entries.json.corrupt-<timestamp>` rather than being overwritten. Copy that one
-file to back up the calendar.
+删除某天的最后一条备忘录后，这一天会从月历中移除。写入串行化，并用
+「写临时文件 + rename」落盘；文件损坏时会保留为 `entries.json.corrupt-<时间戳>`，
+不会直接覆盖。备份时复制这一个文件即可。
 
-Earlier data is normalized when read: the old single-text day entry becomes one
-memo item, and the notebook-style `notes.json` is imported as one item per
-notebook entry. Existing text is preserved.
+旧数据会在读取时自动转换：上一版的单段文字会变成一条备忘录，旧原型的
+`notes.json` 会按原笔记逐条导入，原有文字不会丢失。
 
-## HTTP surface
+## 对外接口
 
-Seven same-origin JSON routes under `/dsh-memo/api/`:
+宿主注册 7 条同源 JSON 路由（都在 `/dsh-memo/api/` 下）：
 
-| Method | Path | Body | Result |
+| 方法 | 路径 | 请求体 | 返回 |
 | --- | --- | --- | --- |
 | GET | `/ping` | — | `{ ok, name, version, days, memos, dataFile }` |
 | GET | `/list` | — | `{ version, entries, days, memos }` |
@@ -97,22 +90,21 @@ Seven same-origin JSON routes under `/dsh-memo/api/`:
 | POST | `/reorder` | `{ date, ids }` | `{ items, days, memos }` |
 | POST | `/clear` | `{ date }` | `{ ok, removed, days, memos }` |
 
-Dates are local calendar dates in `YYYY-MM-DD` form. Routes refuse explicit
-cross-site requests (`Sec-Fetch-Site: cross-site`) and an `Origin` that does not
-match `Host`.
+日期使用本地日历日期，格式为 `YYYY-MM-DD`。路由会拒绝显式跨站请求
+（`Sec-Fetch-Site: cross-site`）以及 `Origin` 与 `Host` 不匹配的请求。
 
-## Development
+## 开发
 
-No bundler is required. Validate both halves with:
+不需要打包器。用下面的命令检查两半代码的语法：
 
 ```bash
 node --check lib/index.js
 node --check lib/client.js
 ```
 
-The client module is a lazy `window.__ModuleLoader__` factory. It registers a
-`main` panel named `memo-calendar` and the matching `sidebar.panellist` icon.
+浏览器半侧是一个 `window.__ModuleLoader__` 懒加载工厂，注册名为 `memo-calendar`
+的 `main` 面板，以及对应的 `sidebar.panellist` 图标。
 
-## License
+## 许可证
 
 MIT
