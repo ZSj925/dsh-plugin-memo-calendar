@@ -1,19 +1,21 @@
 # Calendar memos for DeepSeek Harness
 
-A small DSH plugin that turns a month calendar into a daily journal. Pick any
-day, write, and the text is saved on this machine automatically.
+A small DSH plugin that turns a month calendar into a collection of daily
+memos. Pick a day, add memos one by one, and everything stays on this machine.
 
 ![Calendar icon](icon.svg)
 
 ## What it does
 
 - A full month calendar in the main panel, opened from the sidebar's panel list.
-- Every day keeps one memo; days with text show a dot and a short preview.
-- Click a day to edit it. The editor autosaves after 700 ms, and `Ctrl`/`Cmd`+`S`
-  saves immediately.
-- Switching days, closing the panel, or closing the page flushes pending text.
-- Previous / next month, a Today shortcut, and a count of recorded days.
-- A two-step **Clear day** action so a day cannot be wiped by one stray click.
+- Any number of separate memos per day, added one at a time.
+- Composer at the bottom of the day panel: type a memo, then **Add** or press
+  `Ctrl`/`Cmd`+`Enter`.
+- Each memo can be edited or deleted independently; **Clear day** removes all
+  memos for the selected day after a second confirmation.
+- Calendar cells show the number of memos and a preview of the latest one.
+- Today is marked with a tinted cell and a filled date number.
+- Previous / next month, a Today shortcut, and day/memo totals.
 - Light and dark themes inherit the host's `--dsw-*` tokens; all UI copy is
   localized in English and Simplified Chinese.
 - Data never leaves the machine.
@@ -48,36 +50,49 @@ check that `dsh-plugin-memo-calendar` is enabled under **Settings → Plugins**.
 
 ```json
 {
-  "version": 2,
+  "version": 3,
   "entries": {
     "2026-11-16": {
-      "text": "First line of the day…",
-      "createdAt": "2026-11-16T10:00:00.000Z",
-      "updatedAt": "2026-11-16T10:02:00.000Z"
+      "items": [
+        {
+          "id": "6f0d0e1a-…",
+          "text": "First memo for the day.",
+          "createdAt": "2026-11-16T10:00:00.000Z",
+          "updatedAt": "2026-11-16T10:00:00.000Z"
+        },
+        {
+          "id": "88d1c5b2-…",
+          "text": "A second, separate memo.",
+          "createdAt": "2026-11-16T10:05:00.000Z",
+          "updatedAt": "2026-11-16T10:05:00.000Z"
+        }
+      ]
     }
   }
 }
 ```
 
-An empty memo removes its day, so only days that carry content are marked.
-Writes are serialized and landed with write-temp + rename; a corrupt file is
-kept as `entries.json.corrupt-<timestamp>` rather than being overwritten.
-Copy that one file to back up the journal.
+Deleting the last memo of a day removes that day. Writes are serialized and
+landed with write-temp + rename; a corrupt file is kept as
+`entries.json.corrupt-<timestamp>` rather than being overwritten. Copy that one
+file to back up the calendar.
 
-The first activation also imports the notebook-style `notes.json` left by the
-earlier prototype, folding each note into the local day it was written, so
-existing text is not lost.
+Earlier data is normalized when read: the old single-text day entry becomes one
+memo item, and the notebook-style `notes.json` is imported as one item per
+notebook entry. Existing text is preserved.
 
 ## HTTP surface
 
-Four same-origin JSON routes under `/dsh-memo/api/`:
+Six same-origin JSON routes under `/dsh-memo/api/`:
 
 | Method | Path | Body | Result |
 | --- | --- | --- | --- |
-| GET | `/ping` | — | `{ ok, name, days, dataFile }` |
-| GET | `/list` | — | `{ version, entries, days }` |
-| POST | `/save` | `{ date, text }` | `{ entry, removed, days }` |
-| POST | `/delete` | `{ date }` | `{ ok, removed, days }` |
+| GET | `/ping` | — | `{ ok, name, version, days, memos, dataFile }` |
+| GET | `/list` | — | `{ version, entries, days, memos }` |
+| POST | `/add` | `{ date, text }` | `{ item, items, days, memos }` |
+| POST | `/update` | `{ date, id, text }` | `{ item, items, days, memos }` |
+| POST | `/delete` | `{ date, id }` | `{ ok, removed, items, days, memos }` |
+| POST | `/clear` | `{ date }` | `{ ok, removed, days, memos }` |
 
 Dates are local calendar dates in `YYYY-MM-DD` form. Routes refuse explicit
 cross-site requests (`Sec-Fetch-Site: cross-site`) and an `Origin` that does not
