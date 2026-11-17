@@ -19,6 +19,8 @@ memos. Pick a day, add memos one by one, and everything stays on this machine.
   is saved immediately and survives restarts.
 - On any day other than today, each memo offers **Move to today**, which appends
   it to today's list.
+- Star any memo to mark it **Long-term**. The editor's Long-term tab collects
+  starred memos across dates; click a date chip to return to its source day.
 - Calendar cells show the number of memos and a preview of the latest one.
 - Today is marked with a tinted cell, a subtle ring, and a small dot beside the date; the date itself looks like every other day.
 - Previous / next month, a Today shortcut, and day/memo totals.
@@ -68,9 +70,10 @@ check that `dsh-plugin-memo-calendar` is enabled under **Settings → Plugins**.
         },
         {
           "id": "88d1c5b2-…",
-          "text": "A second, separate memo.",
+          "text": "A second memo, kept long-term.",
           "createdAt": "2026-11-16T10:05:00.000Z",
-          "updatedAt": "2026-11-16T10:05:00.000Z"
+          "updatedAt": "2026-11-16T10:05:00.000Z",
+          "longTerm": true
         }
       ]
     }
@@ -78,8 +81,9 @@ check that `dsh-plugin-memo-calendar` is enabled under **Settings → Plugins**.
 }
 ```
 
-Deleting the last memo of a day removes that day. Writes are serialized and
-landed with write-temp + rename; a corrupt file is kept as
+A long-term memo still belongs to its source day; `longTerm: true` only makes it
+appear in the Long-term tab as well. Deleting the last memo of a day removes that
+day. Writes are serialized and landed with write-temp + rename; a corrupt file is kept as
 `entries.json.corrupt-<timestamp>` rather than being overwritten. Copy that one
 file to back up the calendar.
 
@@ -89,7 +93,7 @@ notebook entry. Existing text is preserved.
 
 ## HTTP surface
 
-Eight same-origin JSON routes under `/dsh-memo/api/`:
+Nine same-origin JSON routes under `/dsh-memo/api/`:
 
 | Method | Path | Body | Result |
 | --- | --- | --- | --- |
@@ -100,6 +104,7 @@ Eight same-origin JSON routes under `/dsh-memo/api/`:
 | POST | `/delete` | `{ date, id }` | `{ ok, removed, items, days, memos }` |
 | POST | `/reorder` | `{ date, ids }` | `{ items, days, memos }` |
 | POST | `/move` | `{ fromDate, toDate, id }` | `{ item, fromItems, toItems, days, memos }` |
+| POST | `/longterm` | `{ date, id, longTerm }` | `{ item, items, days, memos }` |
 | POST | `/clear` | `{ date }` | `{ ok, removed, days, memos }` |
 
 Dates are local calendar dates in `YYYY-MM-DD` form. Routes refuse explicit

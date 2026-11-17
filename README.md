@@ -14,6 +14,7 @@
 - 每条备忘录都可以单独编辑或删除；「清空本日」需要二次确认。
 - 拖动备忘录左侧的手柄可以调整当天列表顺序，新顺序会立即保存，重启后仍然保留。
 - 查看的不是今天时，每条备忘录都有「移至今天」；会把该条移动到今天列表末尾。
+- 每条备忘录可以点星标设为「长期」；编辑器里的「长期」标签页会跨日期集中显示，点日期可回到原日期。
 - 月历单元格显示当天的备忘录条数，并预览最新一条。
 - 今天用淡色背景、细描边和日期旁的小圆点标记，日期本身与其他日期一致。
 - 支持上个月 / 下个月、回到今天，以及天数与备忘录条数统计。
@@ -60,9 +61,10 @@ dsh plugin add link:/absolute/path/to/dsh-plugin-memo-calendar
         },
         {
           "id": "88d1c5b2-…",
-          "text": "今天第二条，单独保存。",
+          "text": "今天第二条，单独保存，并标记为长期。",
           "createdAt": "2026-11-16T10:05:00.000Z",
-          "updatedAt": "2026-11-16T10:05:00.000Z"
+          "updatedAt": "2026-11-16T10:05:00.000Z",
+          "longTerm": true
         }
       ]
     }
@@ -70,6 +72,7 @@ dsh plugin add link:/absolute/path/to/dsh-plugin-memo-calendar
 }
 ```
 
+长期备忘录仍属于它所在的那一天，只是带有 `longTerm: true` 标记，因此会同时出现在「长期」标签页。
 删除某天的最后一条备忘录后，这一天会从月历中移除。写入串行化，并用
 「写临时文件 + rename」落盘；文件损坏时会保留为 `entries.json.corrupt-<时间戳>`，
 不会直接覆盖。备份时复制这一个文件即可。
@@ -79,7 +82,7 @@ dsh plugin add link:/absolute/path/to/dsh-plugin-memo-calendar
 
 ## 对外接口
 
-宿主注册 8 条同源 JSON 路由（都在 `/dsh-memo/api/` 下）：
+宿主注册 9 条同源 JSON 路由（都在 `/dsh-memo/api/` 下）：
 
 | 方法 | 路径 | 请求体 | 返回 |
 | --- | --- | --- | --- |
@@ -90,6 +93,7 @@ dsh plugin add link:/absolute/path/to/dsh-plugin-memo-calendar
 | POST | `/delete` | `{ date, id }` | `{ ok, removed, items, days, memos }` |
 | POST | `/reorder` | `{ date, ids }` | `{ items, days, memos }` |
 | POST | `/move` | `{ fromDate, toDate, id }` | `{ item, fromItems, toItems, days, memos }` |
+| POST | `/longterm` | `{ date, id, longTerm }` | `{ item, items, days, memos }` |
 | POST | `/clear` | `{ date }` | `{ ok, removed, days, memos }` |
 
 日期使用本地日历日期，格式为 `YYYY-MM-DD`。路由会拒绝显式跨站请求
