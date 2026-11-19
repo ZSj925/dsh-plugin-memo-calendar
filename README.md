@@ -14,7 +14,7 @@
 - 每条备忘录都可以单独编辑或删除；「清空本日」需要二次确认。
 - 拖动备忘录左侧的手柄可以调整当天列表顺序，新顺序会立即保存，重启后仍然保留。
 - 查看的不是今天时，每条备忘录都有「移至今天」；会把该条移动到今天列表末尾。
-- 「长期」标签页是一份独立清单：不绑定日期，可以直接添加、编辑和删除。旧版本中已标记为长期的备忘录会自动迁移过来。
+- 「长期」标签页是一份独立清单：不绑定日期，可以直接添加、编辑和删除。拖动左侧手柄可以调整长期备忘录的顺序，顺序会保存。旧版本中已标记为长期的备忘录会自动迁移过来。
 - 月历单元格显示当天的备忘录条数，并预览最新一条。
 - 今天用淡色背景、细描边和日期旁的小圆点标记，日期本身与其他日期一致。
 - 支持上个月 / 下个月、回到今天，以及天数与备忘录条数统计。
@@ -84,7 +84,7 @@ dsh plugin add link:/absolute/path/to/dsh-plugin-memo-calendar
 
 ## 对外接口
 
-宿主注册 11 条同源 JSON 路由（都在 `/dsh-memo/api/` 下）：
+宿主注册 12 条同源 JSON 路由（都在 `/dsh-memo/api/` 下）：
 
 | 方法 | 路径 | 请求体 | 返回 |
 | --- | --- | --- | --- |
@@ -98,6 +98,7 @@ dsh plugin add link:/absolute/path/to/dsh-plugin-memo-calendar
 | POST | `/longterm/add` | `{ text }` | `{ item, longTerm, longTermMemos }` |
 | POST | `/longterm/update` | `{ id, text }` | `{ item, longTerm, longTermMemos }` |
 | POST | `/longterm/delete` | `{ id }` | `{ ok, removed, longTerm, longTermMemos }` |
+| POST | `/longterm/reorder` | `{ ids }` | `{ longTerm, longTermMemos }` |
 | POST | `/clear` | `{ date }` | `{ ok, removed, days, memos }` |
 
 日期使用本地日历日期，格式为 `YYYY-MM-DD`。路由会拒绝显式跨站请求

@@ -20,8 +20,8 @@ memos. Pick a day, add memos one by one, and everything stays on this machine.
 - On any day other than today, each memo offers **Move to today**, which appends
   it to today's list.
 - The **Long-term** tab is an independent list with no dates: add, edit, and
-  delete long-term memos there. Memos marked long-term by older versions are
-  migrated automatically.
+  delete long-term memos there. Drag the left handle to reorder them; the order
+  is saved. Memos marked long-term by older versions are migrated automatically.
 - Calendar cells show the number of memos and a preview of the latest one.
 - Today is marked with a tinted cell, a subtle ring, and a small dot beside the date; the date itself looks like every other day.
 - Previous / next month, a Today shortcut, and day/memo totals.
@@ -96,7 +96,7 @@ item per notebook entry. Existing text is preserved.
 
 ## HTTP surface
 
-Eleven same-origin JSON routes under `/dsh-memo/api/`:
+Twelve same-origin JSON routes under `/dsh-memo/api/`:
 
 | Method | Path | Body | Result |
 | --- | --- | --- | --- |
@@ -110,6 +110,7 @@ Eleven same-origin JSON routes under `/dsh-memo/api/`:
 | POST | `/longterm/add` | `{ text }` | `{ item, longTerm, longTermMemos }` |
 | POST | `/longterm/update` | `{ id, text }` | `{ item, longTerm, longTermMemos }` |
 | POST | `/longterm/delete` | `{ id }` | `{ ok, removed, longTerm, longTermMemos }` |
+| POST | `/longterm/reorder` | `{ ids }` | `{ longTerm, longTermMemos }` |
 | POST | `/clear` | `{ date }` | `{ ok, removed, days, memos }` |
 
 Dates are local calendar dates in `YYYY-MM-DD` form. Routes refuse explicit
