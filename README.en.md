@@ -19,8 +19,9 @@ memos. Pick a day, add memos one by one, and everything stays on this machine.
   is saved immediately and survives restarts.
 - On any day other than today, each memo offers **Move to today**, which appends
   it to today's list.
-- Star any memo to mark it **Long-term**. The editor's Long-term tab collects
-  starred memos across dates; click a date chip to return to its source day.
+- The **Long-term** tab is an independent list with no dates: add, edit, and
+  delete long-term memos there. Memos marked long-term by older versions are
+  migrated automatically.
 - Calendar cells show the number of memos and a preview of the latest one.
 - Today is marked with a tinted cell, a subtle ring, and a small dot beside the date; the date itself looks like every other day.
 - Previous / next month, a Today shortcut, and day/memo totals.
@@ -58,7 +59,7 @@ check that `dsh-plugin-memo-calendar` is enabled under **Settings → Plugins**.
 
 ```json
 {
-  "version": 3,
+  "version": 4,
   "entries": {
     "2026-11-16": {
       "items": [
@@ -67,33 +68,35 @@ check that `dsh-plugin-memo-calendar` is enabled under **Settings → Plugins**.
           "text": "First memo for the day.",
           "createdAt": "2026-11-16T10:00:00.000Z",
           "updatedAt": "2026-11-16T10:00:00.000Z"
-        },
-        {
-          "id": "88d1c5b2-…",
-          "text": "A second memo, kept long-term.",
-          "createdAt": "2026-11-16T10:05:00.000Z",
-          "updatedAt": "2026-11-16T10:05:00.000Z",
-          "longTerm": true
         }
       ]
     }
-  }
+  },
+  "longTerm": [
+    {
+      "id": "88d1c5b2-…",
+      "text": "A long-term memo with no date.",
+      "createdAt": "2026-11-16T10:05:00.000Z",
+      "updatedAt": "2026-11-16T10:05:00.000Z"
+    }
+  ]
 }
 ```
 
-A long-term memo still belongs to its source day; `longTerm: true` only makes it
-appear in the Long-term tab as well. Deleting the last memo of a day removes that
-day. Writes are serialized and landed with write-temp + rename; a corrupt file is kept as
+Long-term memos live in the top-level `longTerm` array, independent of any date,
+and do not count toward daily calendar entries. Deleting the last daily memo of a
+day removes that day. Writes are serialized and landed with write-temp + rename; a corrupt file is kept as
 `entries.json.corrupt-<timestamp>` rather than being overwritten. Copy that one
 file to back up the calendar.
 
 Earlier data is normalized when read: the old single-text day entry becomes one
-memo item, and the notebook-style `notes.json` is imported as one item per
-notebook entry. Existing text is preserved.
+memo item, and any memo carrying the old `longTerm` flag is moved into the
+top-level `longTerm` array. The notebook-style `notes.json` is imported as one
+item per notebook entry. Existing text is preserved.
 
 ## HTTP surface
 
-Nine same-origin JSON routes under `/dsh-memo/api/`:
+Eleven same-origin JSON routes under `/dsh-memo/api/`:
 
 | Method | Path | Body | Result |
 | --- | --- | --- | --- |
@@ -104,7 +107,9 @@ Nine same-origin JSON routes under `/dsh-memo/api/`:
 | POST | `/delete` | `{ date, id }` | `{ ok, removed, items, days, memos }` |
 | POST | `/reorder` | `{ date, ids }` | `{ items, days, memos }` |
 | POST | `/move` | `{ fromDate, toDate, id }` | `{ item, fromItems, toItems, days, memos }` |
-| POST | `/longterm` | `{ date, id, longTerm }` | `{ item, items, days, memos }` |
+| POST | `/longterm/add` | `{ text }` | `{ item, longTerm, longTermMemos }` |
+| POST | `/longterm/update` | `{ id, text }` | `{ item, longTerm, longTermMemos }` |
+| POST | `/longterm/delete` | `{ id }` | `{ ok, removed, longTerm, longTermMemos }` |
 | POST | `/clear` | `{ date }` | `{ ok, removed, days, memos }` |
 
 Dates are local calendar dates in `YYYY-MM-DD` form. Routes refuse explicit
