@@ -19,6 +19,8 @@ memos. Pick a day, add memos one by one, and everything stays on this machine.
   is saved immediately and survives restarts.
 - On any day other than today, each memo offers **Move to today**, which appends
   it to today's list.
+- Drag a dated memo by its left handle and drop it on any calendar day to move it
+  to that date.
 - The **Long-term** tab is an independent list with no dates: add, edit, and
   delete long-term memos there. Drag the left handle to reorder them; the order
   is saved. Memos marked long-term by older versions are migrated automatically.
